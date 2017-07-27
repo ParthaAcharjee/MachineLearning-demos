@@ -8,9 +8,9 @@ x=np.linspace(-1,1,N)
 ymodel=np.sqrt(1-x**2)
 ymodel=np.sin(2*np.pi*x)
 y=ymodel+np.random.normal(0,0.001,N)
-noise=np.zeros(N)
-noise[10:N-10:20]=1;
-y[noise==1]=5
+# noise=np.zeros(N)
+# noise[10:N-10:20]=1;
+# y[noise==1]=5
 
 
 
