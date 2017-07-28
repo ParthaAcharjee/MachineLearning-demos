@@ -25,12 +25,10 @@ for i in range(1,model):
 modelLinear = linear_model.LinearRegression()
 modelLinear.fit(X,y)
 coefsLinear=modelLinear.coef_
-yestL0=modelLinear.predict(X)
 
-## L2 regularization error and coefficient relation
-
+### L2 regularization regression
 n_alphas = 200
-alphas = np.logspace(-2, 2, n_alphas)
+alphas = np.logspace(5, -5, n_alphas)
 
 
 modelL2 = linear_model.Ridge(fit_intercept=False)
@@ -45,11 +43,10 @@ for a,k in zip(alphas,range(0,n_alphas)):
     coefsL2[k,:]=modelL2.coef_
     yest=modelL2.predict(X)
     errorL2[k]=np.mean((y-yest)**2)
-    modelDeviationL2[k]=np.mean((ymodel-yest)**2)
+    modelDeviationL2[k]=np.mean(((ymodel-yest)**2))
  
 
-## L1 regularization and coefficeint relation
-
+## L1 regularization regression
 modelL1 = linear_model.Lasso(fit_intercept=False)
 
 coefsL1 = np.zeros((n_alphas,model))
@@ -62,17 +59,17 @@ for a,k in zip(alphas,range(0,n_alphas)):
     coefsL1[k,:]=modelL1.coef_
     yest=modelL1.predict(X)
     errorL1[k]=np.mean((y-yest)**2)
-    modelDeviationL1[k]=np.mean((ymodel-yest)**2)
+    modelDeviationL1[k]=np.mean(((ymodel-yest)**2))
 
 
-## Plot coefficients weights for different alphas
+## Plot L1 and L2 weights for different alphas
 fig,subplot=plt.subplots(2,1,sharex=True)
 
 ax =subplot[0]
 
 ax.plot(alphas, coefsL2)
 ax.set_xscale('log')
-ax.set_title('L2 coefficients as a function of the regularization')
+ax.set_title('L2 weights as a function of the regularization')
 ax.set_ylabel('weights')
 
 ax=subplot[1]
@@ -82,11 +79,11 @@ ax.set_xscale('log')
 ax.set_xlabel('alpha')
 ax.set_ylabel('weights')
 
-ax.set_title('L1 coefficients as a function of the regularization')
+ax.set_title('L1 weights as a function of the regularization')
 plt.axis('tight')
 plt.show()
 
-## Plot Regularization (alpha) vs Error
+## Plot L1 and L2 estimation error for different alphas
 plt.figure()
 plt.plot(alphas,errorL1,color='r',label='L1 deviation from data')
 plt.plot(alphas,errorL2,color='b', label='L2 deviation from data')
@@ -95,11 +92,11 @@ plt.plot(alphas,modelDeviationL2,color='g',ls='--', label='L2 deviation from mod
 plt.xscale('log')
 plt.xlabel('Alphas')
 plt.ylabel('Error')
-plt.title('Regularization (alpha) vs Error')
+plt.title('L1 and L2 estimation error for different alphas')
 plt.legend()
 plt.show()
 
-## Plot Regularization (alpha) vs Coefficients==0
+## Plot Number of zeros weights of L1 and L2 regularization
 plt.figure()
 L1zeros=np.sum(abs(coefsL1)<1e-15,axis=1)
 L2zeros=np.sum(abs(coefsL2)<1e-15,axis=1)
@@ -107,9 +104,11 @@ plt.plot(alphas,L1zeros,'r',alphas,L2zeros,'b')
 plt.xscale('log')
 plt.xlabel('Alphas')
 plt.ylabel('Number of zeros')
-plt.title('Regularization (alpha) vs Coefficients==0')
+plt.title('Plot number of zeros weights of L1 and L2 regularization')
 plt.show()
 
+## Estimate using all three models
+yestL0=modelLinear.predict(X)
 yestL1=modelL1.predict(X)
 yestL2=modelL2.predict(X)
 plt.figure()
@@ -120,21 +119,20 @@ plt.plot(x,yestL1,color='g',ls='--',label='L1 regularization')
 plt.plot(x,yestL2,color='b',ls='--',label='L2 regularization')
 plt.xlabel('data')
 plt.ylabel('target')
-plt.title('Linear Regression')
+plt.title('Estimation using linear Regression')
 plt.legend()
 plt.show()
 
-print("\nError from data L0: ",(np.sqrt(np.mean(y-yestL0)**2)))
-print("Error from data L1: ",(np.sqrt(np.mean(y-yestL1)**2)))
-print("Error from data L2: ",(np.sqrt(np.mean(y-yestL2)**2)))
+print("\nError from data L0: ",(np.sqrt(np.mean((y-yestL0)**2))))
+print("Error from data L1: ",(np.sqrt(np.mean((y-yestL1)**2))))
+print("Error from data L2: ",(np.sqrt(np.mean((y-yestL2)**2))))
 
-print("\nError from model L0: ",(np.sqrt(np.mean(ymodel-yestL0)**2)))
-print("Error from model L1: ",(np.sqrt(np.mean(ymodel-yestL1)**2)))
-print("Error from model L2: ",(np.sqrt(np.mean(ymodel-yestL2)**2)))
+print("\nError from model L0: ",(np.sqrt(np.mean((ymodel-yestL0)**2))))
+print("Error from model L1: ",(np.sqrt(np.mean((ymodel-yestL1)**2))))
+print("Error from model L2: ",(np.sqrt(np.mean((ymodel-yestL2)**2))))
 
 
-
-## SVM regression
+## Estimation using SVM regression
 plt.figure()
 svr_rbf = SVR(kernel='rbf', C=1e3, gamma=0.1)
 svr_lin = SVR(kernel='linear', C=1e3)
@@ -144,9 +142,14 @@ y_lin = svr_lin.fit(X, y).predict(X)
 y_poly = svr_poly.fit(X, y).predict(X)
 
 
-print("\nError from model RBF: ",(np.sqrt(np.mean(ymodel-y_rbf)**2)))
-print("Error from model Linear: ",(np.sqrt(np.mean(ymodel-y_lin)**2)))
-print("Error from model Poly: ",(np.sqrt(np.mean(ymodel-y_poly)**2)))
+print("\nError from data RBF: ",(np.sqrt(np.mean((y-y_rbf)**2))))
+print("Error from data Linear: ",(np.sqrt(np.mean((y-y_lin)**2))))
+print("Error from data Poly: ",(np.sqrt(np.mean((y-y_poly)**2))))
+
+
+print("\nError from model RBF: ",(np.sqrt(np.mean((ymodel-y_rbf)**2))))
+print("Error from model Linear: ",(np.sqrt(np.mean((ymodel-y_lin)**2))))
+print("Error from model Poly: ",(np.sqrt(np.mean((ymodel-y_poly)**2))))
 
 
 lw = 2
@@ -157,7 +160,7 @@ plt.plot(x, y_lin, color='c', lw=lw, label='Linear model')
 plt.plot(x, y_poly, color='cornflowerblue', lw=lw, label='Polynomial model')
 plt.xlabel('data')
 plt.ylabel('target')
-plt.title('Support Vector Regression')
+plt.title('Estimation using Support Vector Regression')
 plt.legend()
 plt.show()
 
