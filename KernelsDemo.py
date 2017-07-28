@@ -53,12 +53,18 @@ clf2.fit(X, y)
 Yest=clf2.predict(X)
 plotclasses(X,Yest,'Manual kernel results')
 
-# RBF introduce a kernel
+# Using RBF kernels
 
 clf3 = svm.SVC()
 clf3.fit(x, y)
 yrbf=clf3.predict(x)
 plotclasses(x,yrbf,'RBF kernel results')
+
+
+clf4 = svm.SVC(kernel='poly',degree=2)
+clf4.fit(x, y)
+ypoly=clf4.predict(x)
+plotclasses(x,ypoly,'Poly kernel results with degree 2')
 
 # Plotting decision regions
 #plt.figure()
