@@ -11,7 +11,7 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.gaussian_process import GaussianProcessClassifier
 
 plt.close('all')
-# define ploting function
+# define plotting function
 def plotclasses(x,y,ax,plottitle='Training samples on feature domain'):
     ## Plot datas
     ax.scatter(x[y,0],x[y,1],marker='.', s=2,color='r',alpha=0.5,label='Red Class')
